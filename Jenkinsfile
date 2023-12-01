@@ -27,7 +27,7 @@ pipeline {
         }
         stage('Deploy') {
             when {
-                expression { params.destroyOption }
+                expression { !params.destroyOption }
             }
             steps {
                 script {
@@ -37,7 +37,7 @@ pipeline {
             }
         stage('Destroy') {
             when {
-                expression { !params.destroyOption }
+                expression { params.destroyOption }
             }
             steps {
                 script {

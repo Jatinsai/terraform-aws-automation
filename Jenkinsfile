@@ -10,11 +10,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/Jatinsai/terraform-aws-automation.git'            }
-        }
-
         stage('Initialize') {
             steps {
                 script {
@@ -31,16 +26,23 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                expression { params.destroyOption }
+            }
             steps {
                 script {
-                    if (params.destroyOption) {
-                            // Run Terraform destroy
-                            sh 'terraform destroy -auto-approve'
-                        } else {
-                            // Run Terraform apply (or any other deployment logic)
-                            sh 'terraform apply -auto-approve'
+                          sh 'terraform apply -auto-approve'
                         }
-                }
+                    }
+            }
+        stage('Destroy') {
+            when {
+                expression { !params.destroyOption }
+            }
+            steps {
+                script {
+                          sh 'terraform destroy -auto-approve'
+                    }
             }
         }
     }

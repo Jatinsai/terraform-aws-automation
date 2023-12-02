@@ -31,6 +31,15 @@ pipeline {
             }
         }
 
+        stage('Install kubectl') {
+            steps {
+                script {
+                    sh 'sudo apt-get update && sudo apt-get install -y kubectl'
+                    sh 'export PATH=$PATH:/usr/bin'
+                }
+            }
+        }
+
         stage('Deploy to Minikube') {
             steps {
                 script {

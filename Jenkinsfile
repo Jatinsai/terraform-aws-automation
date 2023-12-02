@@ -12,8 +12,12 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
-                    sh "docker build -t $DOCKER_IMAGE ."
-                    sh "minikube status"
+                    sh '''
+                    docker build -t $DOCKER_IMAGE .
+                    minikube start
+                    minikube profile list
+                    minikube status
+                    '''
                 }
             }
         }

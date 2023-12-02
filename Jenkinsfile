@@ -34,7 +34,7 @@ pipeline {
         stage('Install kubectl') {
             steps {
                 script {
-                    sh 'sudo apt-get update && sudo apt-get install -y kubectl'
+                    sh 'sudo apt-get update && sudo snap install kubectl --classic'
                     sh 'export PATH=$PATH:/usr/bin'
                 }
             }

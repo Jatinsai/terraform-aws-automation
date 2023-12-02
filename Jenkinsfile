@@ -1,48 +1,37 @@
 pipeline {
     agent any
-    
+
     environment {
-        aws_creds = credentials('aws-auth-creds')
-    }
-    
-    parameters {
-        booleanParam(name: 'destroyOption', defaultValue: false, description: 'Check this box to destroy infrastructure')
+        DOCKER_IMAGE = "docker pull nginx"
     }
 
     stages {
-        stage('Initialize') {
+        
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'terraform init'
+                    // Build Docker image
+                    sh "docker build -t $DOCKER_IMAGE ."
                 }
             }
         }
 
-        stage('Plan') {
+        stage('Push Docker Image to Minikube Registry') {
             steps {
                 script {
-                    sh 'terraform plan'
+                    // Load Docker image into Minikube's internal registry
+                    sh "minikube image load $DOCKER_IMAGE"
                 }
             }
         }
-        stage('Deploy') {
-            when {
-                expression { !params.destroyOption }
-            }
+
+        stage('Deploy to Minikube') {
             steps {
                 script {
-                          sh 'terraform apply -auto-approve'
-                        }
-                    }
-            }
-        stage('Destroy') {
-            when {
-                expression { params.destroyOption }
-            }
-            steps {
-                script {
-                          sh 'terraform destroy -auto-approve'
-                    }
+                    // Apply Kubernetes manifests
+                    sh "kubectl apply -f kubernetes/nginx-deployment.yaml"
+                    sh "kubectl apply -f kubernetes/nginx-service.yaml"
+                }
             }
         }
     }

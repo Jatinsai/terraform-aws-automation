@@ -44,8 +44,7 @@ pipeline {
             steps {
                 script {
                     // Apply Kubernetes manifests
-                    sh "kubectl apply -f kubernetes/nginx-deployment.yaml"
-                    sh "kubectl apply -f kubernetes/nginx-service.yaml"
+                    sh "kubectl run nginx --image=$DOCKER_IMAGE"                 
                 }
             }
         }

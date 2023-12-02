@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "nginx"
-        minikube_secret = credentials("minikube-secret")
+        minikube_secret = credentials('minikube-secret')
     }
 
     stages {

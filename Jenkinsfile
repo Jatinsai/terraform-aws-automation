@@ -13,6 +13,7 @@ pipeline {
                 script {
                     // Build Docker image
                     sh "docker build -t $DOCKER_IMAGE ."
+                    sh "minikube status"
                 }
             }
         }

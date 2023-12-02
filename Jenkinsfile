@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "docker pull nginx"
+        DOCKER_IMAGE = "nginx"
     }
 
     stages {

@@ -3,7 +3,8 @@ pipeline {
 
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: '', description: 'Docker image name and tag')
-        string(name: 'DEPLOYMENT_NAME', defaultValue: '', description: 'Kubernetes deployment name')
+        //string(name: 'DEPLOYMENT_NAME', defaultValue: '', description: 'Kubernetes deployment name')
+        choice(name: 'DEPLOYMENT_NAME', choices: getKubernetesDeployments(), description: 'Select a Kubernetes deployment')
         booleanParam(name: 'destroyOption', defaultValue: false, description: 'Check this box to destroy deployment')
     }
     environment {
@@ -90,9 +91,20 @@ pipeline {
             }
             steps {
                 script {
-                          sh 'kubectl delete deployment ${deploymentName}'
+                        def deploymentName = params.DEPLOYMENT_NAME                    
+                        def deploymentExists = sh(script: "kubectl get deployment $deploymentName --no-headers --output=name", returnStatus: true)
+                        if (deploymentExists == 0) {
+                            echo "$deploymentName exists!"                               
+                              sh 'kubectl delete deployment ${deploymentName}'
+                        }else
+                            echo "$deploymentName not exists!" 
                 }
             }
         }
     }
+}
+
+def getKubernetesDeployments() {
+    def deployments = sh(script: "kubectl get deployments --no-headers -o custom-columns=':metadata.name' -n ${params.K8S_NAMESPACE}", returnStdout: true).trim().split('\n')
+    return deployments
 }

@@ -91,7 +91,8 @@ pipeline {
                     } else {
                         echo "Deployment $deploymentName does not exist. No action needed."                    
                     // Apply Kubernetes manifests
-                        sh "kubectl create deployment mydeploy --image=$DOCKER_IMAGE --replicas=3"                 
+                        sh "kubectl create deployment mydeploy --image=$DOCKER_IMAGE --replicas=3" 
+                    }
                 }
             }
         }

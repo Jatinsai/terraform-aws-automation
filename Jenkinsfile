@@ -91,7 +91,7 @@ pipeline {
                             // Get the service URL
                             serviceURL = sh(script: "minikube -p $MINIKUBE_PROFILE service $deploymentName-service --url", returnStdout: true).trim()
                             echo "Service URL: $serviceURL"
-                            curl -I $serviceURL
+                            sh "curl -I $serviceURL"
                         }
                     }
                 }

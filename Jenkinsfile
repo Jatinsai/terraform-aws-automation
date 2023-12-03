@@ -109,7 +109,7 @@ pipeline {
 
 def getKubernetesDeployments() {
     def deployments = sh(script: '''
-        kubectl get deployments --no-headers -o custom-columns=':metadata.name'
+        /snap/bin/kubectl get deployments --no-headers -o custom-columns=':metadata.name'
     ''', returnStdout: true).trim().split('\n')
     return deployments
 }

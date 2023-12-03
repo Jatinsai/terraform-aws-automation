@@ -68,6 +68,9 @@ pipeline {
         }
 
         stage('Deploy to Minikube') {
+            when {
+                expression { !params.destroyOption }
+            }
             steps {
                 script {                    
                     def deploymentName = params.DEPLOYMENT_NAME                    

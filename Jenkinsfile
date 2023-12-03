@@ -86,7 +86,7 @@ pipeline {
             }
             steps {
                 script {
-                          sh 'kubectl delete deployment $deploymentName'
+                          sh 'kubectl delete deployment ${params.DEPLOYMENT_NAME}'
                 }
             }
         }

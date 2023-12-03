@@ -89,9 +89,9 @@ pipeline {
                             echo 'User chose not to delete the deployment. Exiting...'
                         }
                     } else {
-                        echo "Deployment $deploymentName does not exist. No action needed."                    
+                        echo "Deployment $deploymentName does not exist. creating...."                    
                     // Apply Kubernetes manifests
-                        sh "kubectl create deployment mydeploy --image=$DOCKER_IMAGE --replicas=3" 
+                        sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3" 
                     }
                 }
             }

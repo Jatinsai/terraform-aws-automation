@@ -1,8 +1,11 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'DOCKER_IMAGE', defaultValue: '', description: 'Docker image name and tag')
+    }
     environment {
-        DOCKER_IMAGE = "nginx"
+        DOCKER_IMAGE = "${DOCKER_IMAGE}"
         MINIKUBE_PROFILE = 'minikube'
         minikube_secret = credentials('minikube-secret')
     }
@@ -13,7 +16,7 @@ pipeline {
                 script {
                     // Build Docker image
                     sh '''
-                    docker build -t $DOCKER_IMAGE .                    
+                    docker build -t ${DOCKER_IMAGE} .                    
                     '''
                 }
             }
@@ -39,7 +42,7 @@ pipeline {
             steps {
                 script {
                     // Load Docker image into Minikube's internal registry
-                    sh "minikube image load $DOCKER_IMAGE"
+                    sh "minikube image load ${DOCKER_IMAGE}"
                 }
             }
         }

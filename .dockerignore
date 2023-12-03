@@ -1,0 +1,4 @@
+# Exclude files and directories that may cause issues
+.git
+.svn
+node_modules

@@ -81,17 +81,19 @@ pipeline {
                             message: "Deployment $deploymentName exists. Do you want to delete it?",
                             parameters: [booleanParam(defaultValue: false, description: 'Confirm deletion', name: 'CONFIRM_DELETE')]
                         )
-                        def confirmDelete = userConfirmation['parameters']['CONFIRM_DELETE']
-                        if (confirmDelete) {
-                            // Delete the deployment
-                            sh "kubectl delete deployment $deploymentName"
+                        // Check if the user approved and retrieve the parameters
+                        if (userConfirmation) {
+                            def confirmDelete = userConfirmation['params']['CONFIRM_DELETE']
+
+                            if (confirmDelete) {
+                                // Delete the deployment
+                                sh "kubectl delete deployment $deploymentName"
+                            } else {
+                                echo 'User chose not to delete the deployment. Exiting...'
+                            }                        
                         } else {
-                            echo 'User chose not to delete the deployment. Exiting...'
-                        }
-                    } else {
-                        echo "Deployment $deploymentName does not exist. creating...."                    
-                    // Apply Kubernetes manifests
-                        sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3" 
+                            echo "Deployment $deploymentName does not exist."
+                            sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3"                                     
                     }
                 }
             }

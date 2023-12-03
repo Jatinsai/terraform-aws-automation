@@ -47,8 +47,16 @@ pipeline {
         stage('Install kubectl') {
             steps {
                 script {
-                    sh 'sudo snap install kubectl --classic'
-                    sh 'export PATH=$PATH:/usr/bin'
+                    def kubectlStatus = sh(script: 'kubectl version', returnStatus: true)
+
+                    if (kubectlStatus != 0) {
+                        echo 'kubectl is not installed. Installing kubectl...'
+                        // Install kubectl
+                        sh 'sudo apt-get update && sudo snap install kubectl --classic'
+                        sh 'export PATH=$PATH:/usr/bin'
+                    } else {
+                        echo 'kubectl is already installed.'
+                    }                   
                 }
             }
         }

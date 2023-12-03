@@ -136,22 +136,3 @@ def getKubernetesDeployments() {
         return ['Error Retrieving Deployments'] // Return a special choice for an error
     }
 }
-
-def deploymentChoice = choice(name: 'DEPLOYMENT_NAME', choices: getKubernetesDeployments(), description: 'Select a Kubernetes deployment')
-
-if (deploymentChoice == 'Create New Deployment') {
-    // Handle the logic for creating a new deployment
-    // You might want to prompt the user for additional information or use defaults
-    // For example, you can use an input step or call another function to create a new deployment
-    // sh(script: '/snap/bin/kubectl create deployment ...', returnStatus: true)
-} else if (deploymentChoice != 'Deployments') {
-    // Handle the logic for selecting an existing deployment
-    // You can use the selected deployment name in further steps
-    // For example, pass it as a parameter to another function or use it in subsequent shell scripts
-    echo "Selected Deployment: ${deploymentChoice}"
-} else {
-    // Handle the case where an error occurred while retrieving deployments
-    // You might want to fail the build or take appropriate actions
-    error 'Failed to retrieve Kubernetes deployments.'
-}
-

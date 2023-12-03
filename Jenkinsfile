@@ -106,7 +106,8 @@ pipeline {
                         def deploymentExists = sh(script: "kubectl get deployment $deploymentName --no-headers --output=name", returnStatus: true)
                         if (deploymentExists == 0) {
                             echo "$deploymentName exists!"                               
-                              sh 'kubectl delete deployment ${deploymentName}'
+                              sh "kubectl delete deployment ${deploymentName}"
+                              sh "kubectl delete svc ${deploymentName}-service"
                         }else{
                             echo "$deploymentName not exists!" 
                         }

@@ -19,8 +19,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
-                    sh '''
-                    docker rmi -f $(docker images -a -q)
+                    sh '''                    
                     docker build -t ${DOCKER_IMAGE} .                    
                     '''
                 }

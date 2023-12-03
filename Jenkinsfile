@@ -5,7 +5,7 @@ pipeline {
         string(name: 'DOCKER_IMAGE', defaultValue: '', description: 'Docker image name and tag')
     }
     environment {
-        DOCKER_IMAGE = "${DOCKER_IMAGE}"
+        DOCKER_IMAGE = "${params.DOCKER_IMAGE}"
         MINIKUBE_PROFILE = 'minikube'
         minikube_secret = credentials('minikube-secret')
     }

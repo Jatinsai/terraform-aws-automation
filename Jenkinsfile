@@ -3,8 +3,8 @@ pipeline {
 
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: '', description: 'Docker image name and tag')
-        //string(name: 'DEPLOYMENT_NAME', defaultValue: '', description: 'Kubernetes deployment name')
-        choice(name: 'DEPLOYMENT_NAME', choices: getKubernetesDeployments(), description: 'Select a Kubernetes deployment')
+        string(name: 'DEPLOYMENT_NAME', defaultValue: '', description: 'Kubernetes deployment name')
+        //choice(name: 'DEPLOYMENT_NAME', choices: getKubernetesDeployments(), description: 'Select a Kubernetes deployment')
         booleanParam(name: 'destroyOption', defaultValue: false, description: 'Check this box to destroy deployment')
     }
     environment {
@@ -118,21 +118,3 @@ pipeline {
       //  return [] // Return an empty list in case of an error
    // }
 //}
-
-def getKubernetesDeployments() {
-    try {
-        def deployments = sh(script: '''
-            /snap/bin/kubectl get deployments --no-headers -o custom-columns=':metadata.name'
-        ''', returnStdout: true).trim().split('\n')
-        
-        // If there are no deployments, add a special choice for creating a new one
-        if (deployments.isEmpty()) {
-            return ['Create New Deployment']
-        }
-
-        return deployments
-    } catch (Exception e) {
-        echo "Error retrieving Kubernetes deployments: ${e.message}"
-        return ['Error Retrieving Deployments'] // Return a special choice for an error
-    }
-}

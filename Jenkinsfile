@@ -107,14 +107,51 @@ pipeline {
     }
 }
 
+//def getKubernetesDeployments() {
+  //  try {
+  //      def deployments = sh(script: '''
+    //        /snap/bin/kubectl get deployments
+      //  ''', returnStdout: true).trim().split('\n')
+       // return deployments
+   // } catch (Exception e) {
+    //    echo "Error retrieving Kubernetes deployments: ${e.message}"
+      //  return [] // Return an empty list in case of an error
+   // }
+//}
+
 def getKubernetesDeployments() {
     try {
         def deployments = sh(script: '''
-            /snap/bin/kubectl get deployments
+            /snap/bin/kubectl get deployments --no-headers -o custom-columns=':metadata.name'
         ''', returnStdout: true).trim().split('\n')
+        
+        // If there are no deployments, add a special choice for creating a new one
+        if (deployments.isEmpty()) {
+            return ['Create New Deployment']
+        }
+
         return deployments
     } catch (Exception e) {
         echo "Error retrieving Kubernetes deployments: ${e.message}"
-        return [] // Return an empty list in case of an error
+        return ['Error Retrieving Deployments'] // Return a special choice for an error
     }
 }
+
+def deploymentChoice = choice(name: 'DEPLOYMENT_NAME', choices: getKubernetesDeployments(), description: 'Select a Kubernetes deployment')
+
+if (deploymentChoice == 'Create New Deployment') {
+    // Handle the logic for creating a new deployment
+    // You might want to prompt the user for additional information or use defaults
+    // For example, you can use an input step or call another function to create a new deployment
+    // sh(script: '/snap/bin/kubectl create deployment ...', returnStatus: true)
+} else if (deploymentChoice != 'Error Retrieving Deployments') {
+    // Handle the logic for selecting an existing deployment
+    // You can use the selected deployment name in further steps
+    // For example, pass it as a parameter to another function or use it in subsequent shell scripts
+    echo "Selected Deployment: ${deploymentChoice}"
+} else {
+    // Handle the case where an error occurred while retrieving deployments
+    // You might want to fail the build or take appropriate actions
+    error 'Failed to retrieve Kubernetes deployments.'
+}
+

@@ -3,6 +3,7 @@ pipeline {
 
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: '', description: 'Docker image name and tag')
+        string(name: 'DEPLOYMENT_NAME', defaultValue: '', description: 'Kubernetes deployment name')
     }
     environment {
         DOCKER_IMAGE = "${params.DOCKER_IMAGE}"
@@ -67,8 +68,30 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
+                    // Get the deployment name from parameters
+                    def deploymentName = params.DEPLOYMENT_NAME
+
+                    // Check if the deployment exists
+                    def deploymentExists = sh(script: "kubectl get deployment $deploymentName --no-headers --output=name", returnStatus: true)
+
+                    if (deploymentExists == 0) {
+                        // Ask for user confirmation
+                        def userConfirmation = input(
+                            id: 'confirmDelete',
+                            message: "Deployment $deploymentName exists. Do you want to delete it?",
+                            parameters: [booleanParam(defaultValue: false, description: 'Confirm deletion', name: 'CONFIRM_DELETE')]
+                        )
+
+                        if (userConfirmation.CONFIRM_DELETE) {
+                            // Delete the deployment
+                            sh "kubectl delete deployment $deploymentName"
+                        } else {
+                            echo 'User chose not to delete the deployment. Exiting...'
+                        }
+                    } else {
+                        echo "Deployment $deploymentName does not exist. No action needed."                    
                     // Apply Kubernetes manifests
-                    sh "kubectl create deployment mydeploy --image=$DOCKER_IMAGE --replicas=3"                 
+                        sh "kubectl create deployment mydeploy --image=$DOCKER_IMAGE --replicas=3"                 
                 }
             }
         }

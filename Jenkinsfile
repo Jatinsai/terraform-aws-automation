@@ -10,6 +10,7 @@ pipeline {
         DOCKER_IMAGE = "${params.DOCKER_IMAGE}"
         MINIKUBE_PROFILE = 'minikube'
         minikube_secret = credentials('minikube-secret')
+        deploymentName = "${params.DEPLOYMENT_NAME}"
     }
 
     stages {        
@@ -86,7 +87,7 @@ pipeline {
             }
             steps {
                 script {
-                          sh 'kubectl delete deployment ${params.DEPLOYMENT_NAME}'
+                          sh 'kubectl delete deployment ${deploymentName}'
                 }
             }
         }

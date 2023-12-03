@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Apply Kubernetes manifests
-                    sh "kubectl run nginx --image=$DOCKER_IMAGE"                 
+                    sh "kubectl create deployment mydeploy --image=$DOCKER_IMAGE --replicas=3"                 
                 }
             }
         }

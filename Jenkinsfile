@@ -81,7 +81,7 @@ pipeline {
                             message: "Deployment $deploymentName exists. Do you want to delete it?",
                             parameters: [booleanParam(defaultValue: false, description: 'Confirm deletion', name: 'CONFIRM_DELETE')]
                         )
-
+                        def confirmDelete = userConfirmation['params']['CONFIRM_DELETE']
                         if (userConfirmation.CONFIRM_DELETE) {
                             // Delete the deployment
                             sh "kubectl delete deployment $deploymentName"

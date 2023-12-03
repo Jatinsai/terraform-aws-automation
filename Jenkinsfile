@@ -108,8 +108,13 @@ pipeline {
 }
 
 def getKubernetesDeployments() {
-    def deployments = sh(script: '''
-        /snap/bin/kubectl get deployments --no-headers -o custom-columns=':metadata.name'
-    ''', returnStdout: true).trim().split('\n')
-    return deployments
+    try {
+        def deployments = sh(script: '''
+            /snap/bin/kubectl get deployments
+        ''', returnStdout: true).trim().split('\n')
+        return deployments
+    } catch (Exception e) {
+        echo "Error retrieving Kubernetes deployments: ${e.message}"
+        return [] // Return an empty list in case of an error
+    }
 }

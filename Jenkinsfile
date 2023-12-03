@@ -91,6 +91,7 @@ pipeline {
             }
             steps {
                 script {
+                    node {
                         def deploymentName = params.DEPLOYMENT_NAME                    
                         def deploymentExists = sh(script: "kubectl get deployment $deploymentName --no-headers --output=name", returnStatus: true)
                         if (deploymentExists == 0) {
@@ -99,6 +100,7 @@ pipeline {
                         }else{
                             echo "$deploymentName not exists!" 
                         }
+                    }  
                 }
             }
         }
@@ -106,6 +108,6 @@ pipeline {
 }
 
 def getKubernetesDeployments() {
-    def deployments = sh(script: "kubectl get deployments --no-headers -o custom-columns=':metadata.name' -n ${params.K8S_NAMESPACE}", returnStdout: true).trim().split('\n')
+    def deployments = sh(script: "kubectl get deploy --no-headers -o custom-columns=':metadata.name' returnStdout: true).trim().split('\n')
     return deployments
 }

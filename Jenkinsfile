@@ -96,8 +96,9 @@ pipeline {
                         if (deploymentExists == 0) {
                             echo "$deploymentName exists!"                               
                               sh 'kubectl delete deployment ${deploymentName}'
-                        }else
+                        }else{
                             echo "$deploymentName not exists!" 
+                        }
                 }
             }
         }

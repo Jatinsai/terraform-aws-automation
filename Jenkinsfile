@@ -144,7 +144,7 @@ if (deploymentChoice == 'Create New Deployment') {
     // You might want to prompt the user for additional information or use defaults
     // For example, you can use an input step or call another function to create a new deployment
     // sh(script: '/snap/bin/kubectl create deployment ...', returnStatus: true)
-} else if (deploymentChoice != 'Error Retrieving Deployments') {
+} else if (deploymentChoice != 'Deployments') {
     // Handle the logic for selecting an existing deployment
     // You can use the selected deployment name in further steps
     // For example, pass it as a parameter to another function or use it in subsequent shell scripts

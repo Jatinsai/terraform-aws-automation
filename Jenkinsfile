@@ -82,6 +82,7 @@ pipeline {
                         } else {
                             echo "Deployment $deploymentName does not exist."
                             sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3"
+                            sh "sleep 120"
                             sh "kubectl get deployment $deploymentName -o yaml > $deploymentName.yaml"
                             // Wait for the deployment to be ready (you might need to customize this)
                             sh "kubectl rollout status deployment/$deploymentName"

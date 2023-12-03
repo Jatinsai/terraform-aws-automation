@@ -86,7 +86,8 @@ pipeline {
                             //sh "kubectl get deployment $deploymentName -o yaml > $deploymentName.yaml"
                             // Wait for the deployment to be ready (you might need to customize this)
                             sh "kubectl rollout status deployment/$deploymentName"
-
+                            sh "kubectl expose deployment $deploymentName --type=NodePort --name=$deploymentName-service --port=80"
+                            sh "minikube -p minikube service list"
                             // Get the service URL
                             serviceURL = sh(script: "minikube -p $MINIKUBE_PROFILE service $deploymentName --url", returnStdout: true).trim()
                             echo "Service URL: $serviceURL"

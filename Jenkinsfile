@@ -4,6 +4,7 @@ pipeline {
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: '', description: 'Docker image name and tag')
         string(name: 'DEPLOYMENT_NAME', defaultValue: '', description: 'Kubernetes deployment name')
+        booleanParam(name: 'destroyOption', defaultValue: false, description: 'Check this box to destroy deployment')
     }
     environment {
         DOCKER_IMAGE = "${params.DOCKER_IMAGE}"
@@ -67,37 +68,27 @@ pipeline {
 
         stage('Deploy to Minikube') {
             steps {
-                script {
-                    // Get the deployment name from parameters
-                    def deploymentName = params.DEPLOYMENT_NAME
-
-                    // Check if the deployment exists
+                script {                    
+                    def deploymentName = params.DEPLOYMENT_NAME                    
                     def deploymentExists = sh(script: "kubectl get deployment $deploymentName --no-headers --output=name", returnStatus: true)
-
                     if (deploymentExists == 0) {
-                        // Ask for user confirmation
-                        def userConfirmation = input(
-                            id: 'confirmDelete',
-                            message: "Deployment $deploymentName exists. Do you want to delete it?",
-                            parameters: [booleanParam(defaultValue: false, description: 'Confirm deletion', name: 'CONFIRM_DELETE')]
-                        )
-                        // Check if the user approved and retrieve the parameters
-                        if (userConfirmation) {
-                            def confirmDelete = userConfirmation['params']['CONFIRM_DELETE']
-
-                            if (confirmDelete) {
-                                // Delete the deployment
-                                sh "kubectl delete deployment $deploymentName"
-                            } else {
-                                echo 'User chose not to delete the deployment. Exiting...'
-                            }                        
+                        echo "$deploymentName exists already.."
                         } else {
                             echo "Deployment $deploymentName does not exist."
                             sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3"                                     
+                        }
                     }
+                }
+            }
+        stage('Deleting Deployment') {
+            when {
+                expression { params.destroyOption }
+            }
+            steps {
+                script {
+                          sh 'kubectl delete deployment $deploymentName'
                 }
             }
         }
     }
-  }
 }

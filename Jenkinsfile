@@ -78,9 +78,17 @@ pipeline {
                     def deploymentExists = sh(script: "kubectl get deployment $deploymentName --no-headers --output=name", returnStatus: true)
                     if (deploymentExists == 0) {
                         echo "$deploymentName exists already.."
+                        sh "kubectl apply -f $deploymentName.yaml"
                         } else {
                             echo "Deployment $deploymentName does not exist."
-                            sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3"                                     
+                            sh "kubectl create deployment $deploymentName --image=$DOCKER_IMAGE --replicas=3"
+                            sh "kubectl get deployment $deploymentName -o yaml > $deploymentName.yaml"
+                            // Wait for the deployment to be ready (you might need to customize this)
+                            sh "kubectl rollout status deployment/$deploymentName"
+
+                            // Get the service URL
+                            serviceURL = sh(script: "minikube -p $MINIKUBE_PROFILE service $deploymentName --url", returnStdout: true).trim()
+                            echo "Service URL: $serviceURL"
                         }
                     }
                 }

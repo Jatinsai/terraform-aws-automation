@@ -7,7 +7,7 @@ pipeline {
     
     parameters {
         booleanParam(name: 'destroyOption', defaultValue: false, description: 'Check this box to destroy infrastructure')
-        string(name: 'terraformPlan', description: 'Path to Terraform plan file', defaultValue: false)
+        string(name: 'terraformPlan', description: 'Path to Terraform plan file', defaultValue: "${env.WORKSPACE}/")
     }
 
     stages {

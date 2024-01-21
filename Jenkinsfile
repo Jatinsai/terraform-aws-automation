@@ -35,6 +35,7 @@ pipeline {
             }
             steps {
                 // Do nothing here, just proceed if approved
+                echo "Approved. Hence proceeding..."
             }
         }
 

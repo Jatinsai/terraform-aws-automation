@@ -7,6 +7,7 @@ pipeline {
     
     parameters {
         booleanParam(name: 'destroyOption', defaultValue: false, description: 'Check this box to destroy infrastructure')
+        string(name: 'terraformPlan', description: 'Path to Terraform plan file', defaultValue: false)
     }
 
     stages {
@@ -18,23 +19,44 @@ pipeline {
             }
         }
 
-        stage('Plan') {
+        stage('Terraform Plan') {
             steps {
                 script {
-                    sh 'terraform plan'
+                    // Run Terraform plan and save the output to a file
+                    sh "terraform plan -out=${params.terraformPlan}"
                 }
             }
         }
-        stage('Deploy') {
-            when {
-                expression { !params.destroyOption }
+
+        stage('Approval') {
+            input {
+                message 'Do you want to apply the Terraform changes?'
+                ok 'Yes'
             }
             steps {
-                script {
-                          sh 'terraform apply -auto-approve'
-                        }
-                    }
+                // Do nothing here, just proceed if approved
             }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    // Run Terraform apply using the saved plan
+                    sh "terraform apply -auto-approve ${params.terraformPlan}"
+                }
+            }
+        }
+
+        // stage('Deploy') {
+        //     when {
+        //         expression { !params.destroyOption }
+        //     }
+        //     steps {
+        //         script {
+        //                   sh 'terraform apply -auto-approve'
+        //                 }
+        //             }
+        //     }
         stage('Destroy') {
             when {
                 expression { params.destroyOption }
